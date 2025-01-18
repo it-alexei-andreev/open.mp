@@ -869,6 +869,7 @@ struct PlayerPool final : public IPlayerPool, public NetworkEventHandler, public
 				player.aimingData_.camZoom = aimSync.CamZoom * 0.015873017f * 35.f + 35.f;
 				player.aimingData_.weaponState = PlayerWeaponState(aimSync.WeaponState);
 				player.aimingData_.aspectRatio = (aimSync.AspectRatio * 1.f / 255) + 1.f;
+				player.isTyping_ = aimSync.isTyping;
 
 				// Check for invalid camera modes
 				if (aimSync.CamMode < 0u || aimSync.CamMode > 65u)
@@ -880,6 +881,7 @@ struct PlayerPool final : public IPlayerPool, public NetworkEventHandler, public
 					aimSync.CamMode = 4u;
 
 				aimSync.PlayerID = player.poolID;
+				aimSync.isTyping = player.isTyping_;
 				player.aimSync_ = aimSync;
 				player.secondarySyncUpdateType_ |= SecondarySyncUpdateType_Aim;
 			}

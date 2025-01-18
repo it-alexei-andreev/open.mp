@@ -763,7 +763,7 @@ SCRIPT_API(SetWorldTime, bool(int hour))
 
 SCRIPT_API(SHA256_PassHash, int(std::string const& password, std::string const& salt, OutputOnlyString& output))
 {
-	PawnManager::Get()->core->logLn(LogLevel::Warning, "Using unsafe hashing function SHA256_PassHash");
+	// PawnManager::Get()->core->logLn(LogLevel::Warning, "Using unsafe hashing function SHA256_PassHash");
 
 	// Scope-allocated string, copy it
 	StaticArray<char, 64 + 1> hash;

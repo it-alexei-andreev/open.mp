@@ -1752,6 +1752,7 @@ namespace Packet
 		};
 		uint8_t AspectRatio;
 		uint8_t CamMode;
+		bool isTyping;
 
 		bool read(NetworkBitStream& bs)
 		{
@@ -1769,7 +1770,8 @@ namespace Packet
 				return false;
 			}
 			bs.readUINT8(ZoomWepState);
-			return bs.readUINT8(AspectRatio);
+			bs.readUINT8(AspectRatio);
+			return bs.readUINT8(isTyping);
 		}
 
 		void write(NetworkBitStream& bs) const
@@ -1782,6 +1784,7 @@ namespace Packet
 			bs.writeFLOAT(AimZ);
 			bs.writeUINT8(ZoomWepState);
 			bs.writeUINT8(AspectRatio);
+			bs.writeUINT8(isTyping);
 		}
 	};
 

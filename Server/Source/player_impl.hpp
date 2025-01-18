@@ -119,6 +119,7 @@ struct Player final : public IPlayer, public PoolIDProvider, public NoCopy
 	bool allowTeleport_;
 	bool isUsingOfficialClient_;
 	bool isUsingOmp_;
+	bool isTyping_;
 
 	PrimarySyncUpdateType primarySyncUpdateType_;
 	int secondarySyncUpdateType_;
