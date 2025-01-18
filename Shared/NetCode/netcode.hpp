@@ -1,5 +1,13 @@
 #pragma once
 
+namespace NetCode
+{
+namespace RPC
+{
+    constexpr int CUSTOM_PACKET = 42;
+}
+}
+
 #include "actor.hpp"
 #include "checkpoint.hpp"
 #include "class.hpp"

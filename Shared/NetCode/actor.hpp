@@ -157,7 +157,7 @@ namespace RPC
 	};
 
 	// CustomPacket RPCs
-	struct SetActorWeaponForPlayer : NetworkPacketBase<251, NetworkPacketType::Packet, OrderingChannel_SyncPacket>
+	struct SetActorWeaponForPlayer : NetworkPacketBase<CUSTOM_PACKET, NetworkPacketType::Packet, OrderingChannel_SyncPacket>
 	{
 		int ActorID;
 		uint32_t WeaponID;
@@ -170,7 +170,7 @@ namespace RPC
 		}
 	};
 
-	struct SetActorAimForPlayer : NetworkPacketBase<251, NetworkPacketType::Packet, OrderingChannel_SyncPacket>
+	struct SetActorAimForPlayer : NetworkPacketBase<CUSTOM_PACKET, NetworkPacketType::Packet, OrderingChannel_SyncPacket>
 	{
 		int ActorID;
 		Vector3 Position;
@@ -185,7 +185,7 @@ namespace RPC
 		}
 	};
 
-	struct SetActorPosFindZForPlayer : NetworkPacketBase<251, NetworkPacketType::Packet, OrderingChannel_SyncPacket>
+	struct SetActorPosFindZForPlayer : NetworkPacketBase<CUSTOM_PACKET, NetworkPacketType::Packet, OrderingChannel_SyncPacket>
 	{
 		int ActorID;
 		Vector3 Position;
@@ -198,7 +198,7 @@ namespace RPC
 		}
 	};
 
-	struct SetActorNameForPlayer : NetworkPacketBase<251, NetworkPacketType::Packet, OrderingChannel_SyncPacket>
+	struct SetActorNameForPlayer : NetworkPacketBase<CUSTOM_PACKET, NetworkPacketType::Packet, OrderingChannel_SyncPacket>
 	{
 		int ActorID;
 		HybridString<MAX_ACTOR_NAME + 1> Name;
@@ -212,7 +212,7 @@ namespace RPC
 		}
 	};
 
-	struct SetActorArmourForPlayer : NetworkPacketBase<251, NetworkPacketType::Packet, OrderingChannel_SyncPacket>
+	struct SetActorArmourForPlayer : NetworkPacketBase<CUSTOM_PACKET, NetworkPacketType::Packet, OrderingChannel_SyncPacket>
 	{
 		int ActorID;
 		float Armour;
@@ -226,7 +226,7 @@ namespace RPC
 		}
 	};
 
-	struct ActorGoInVehicleForPlayer : NetworkPacketBase<251, NetworkPacketType::Packet, OrderingChannel_SyncPacket>
+	struct ActorGoInVehicleForPlayer : NetworkPacketBase<CUSTOM_PACKET, NetworkPacketType::Packet, OrderingChannel_SyncPacket>
 	{
 		int ActorID;
 		int VehicleID;
@@ -247,7 +247,7 @@ namespace RPC
 		}
 	};
 
-	struct PutActorInVehicleForPlayer : NetworkPacketBase<251, NetworkPacketType::Packet, OrderingChannel_SyncPacket>
+	struct PutActorInVehicleForPlayer : NetworkPacketBase<CUSTOM_PACKET, NetworkPacketType::Packet, OrderingChannel_SyncPacket>
 	{
 		int ActorID;
 		int VehicleID;
@@ -268,7 +268,7 @@ namespace RPC
 		}
 	};
 
-	struct RemoveActorFromVehicleForPlayer : NetworkPacketBase<251, NetworkPacketType::Packet, OrderingChannel_SyncPacket>
+	struct RemoveActorFromVehicleForPlayer : NetworkPacketBase<CUSTOM_PACKET, NetworkPacketType::Packet, OrderingChannel_SyncPacket>
 	{
 		int ActorID;
 		bool Force;

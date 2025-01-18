@@ -12,8 +12,6 @@
 #include <player.hpp>
 #include <types.hpp>
 
-#define CUSTOM_PACKET		251
-
 namespace NetCode
 {
 namespace RPC
@@ -1586,7 +1584,7 @@ namespace RPC
 	};
 
 	// CustomPacket RPCs
-	struct SetPlayerTag : NetworkPacketBase<CUSTOM_PACKET, NetworkPacketType::Packet, OrderingChannel_SyncRPC>
+	struct SetPlayerTag : NetworkPacketBase<CUSTOM_PACKET, NetworkPacketType::Packet, OrderingChannel_SyncPacket>
 	{
 		int PlayerID;
 		uint8_t Tag;
