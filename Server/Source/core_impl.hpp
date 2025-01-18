@@ -2015,14 +2015,14 @@ public:
 	{
 		time %= 24;
 		*SetWorldTime = time.count();
-		NetCode::RPC::SetPlayerWorldTime RPC;
-		RPC.Time = time;
-		PacketHelper::broadcast(RPC, players);
+		// NetCode::RPC::SetPlayerWorldTime RPC;
+		// RPC.Time = time;
+		// PacketHelper::broadcast(RPC, players);
 
-		for (IPlayer* player : players.entries())
-		{
-			static_cast<Player*>(player)->time_ = time;
-		}
+		// for (IPlayer* player : players.entries())
+		// {
+		// 	static_cast<Player*>(player)->time_ = time;
+		// }
 
 		updateNetworks();
 	}
