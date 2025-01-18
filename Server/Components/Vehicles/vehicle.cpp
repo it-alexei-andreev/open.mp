@@ -164,6 +164,16 @@ bool Vehicle::updateFromDriverSync(const VehicleDriverSyncPacket& vehicleSync, I
 		return false;
 	}
 
+	for (auto& actor : actors)
+	{
+		if (actor)
+		{	
+			Vector3 actorPosition = pos;
+			actorPosition.x += 1.5f;
+			actor->updatePosition(actorPosition);
+		}
+	}
+
 	pos = vehicleSync.Position;
 	rot = vehicleSync.Rotation;
 	velocity = vehicleSync.Velocity;
@@ -693,6 +703,15 @@ void Vehicle::_respawn()
 	}
 	streamedFor_.clear();
 
+	for (auto& actor : actors)
+	{
+		if (actor)
+		{	
+			actor->removeFromVehicle(true);
+		}
+	}
+	actors.clear();
+
 	deathData.dead = false;
 	deathData.time = TimePoint();
 	deathData.killerID = INVALID_PLAYER_ID;
@@ -803,6 +822,16 @@ Vehicle::~Vehicle()
 	{
 		cab->detachTrailer();
 		cab = nullptr;
+	}
+	if (!actors.empty())
+	{
+		for (auto& actor : actors)
+		{
+			if (actor)
+			{	
+				actor->removeFromVehicle(true);
+			}
+		}
 	}
 }
 

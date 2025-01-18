@@ -654,6 +654,22 @@ SCRIPT_API_FAILRET(GetVehicleOccupant, INVALID_PLAYER_ID, int(IVehicle& vehicle,
 	return INVALID_PLAYER_ID;
 }
 
+SCRIPT_API_FAILRET(GetVehicleActorOccupant, INVALID_ACTOR_ID, int(IVehicle& vehicle, int seat))
+{
+	const FlatHashSet<IActor*>& actors = vehicle.getActors();
+	for (auto& actor : actors)
+	{
+		if (actor)
+		{
+			if (actor->getSeat() == seat)
+			{
+				return actor->getID();
+			}
+		}
+	}
+	return INVALID_ACTOR_ID;
+}
+
 SCRIPT_API(GetVehicleMaxPassengers, int(int model))
 {
 	return Impl::getVehiclePassengerSeats(model);

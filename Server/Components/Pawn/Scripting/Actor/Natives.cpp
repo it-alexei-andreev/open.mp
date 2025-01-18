@@ -30,6 +30,24 @@ SCRIPT_API(DestroyActor, bool(IActor& actor))
 	return true;
 }
 
+SCRIPT_API(SetActorName, bool(IActor& actor, const std::string& name))
+{
+	actor.setName(name);
+	return true;
+}
+
+SCRIPT_API(GetActorName, int(IActor& actor, OutputOnlyString& name))
+{
+	name = actor.getName();
+	return std::get<StringView>(name).length();
+}
+
+SCRIPT_API(SetActorNameForPlayer, bool(IActor& actor, const std::string& name, IPlayer& player))
+{
+	actor.setNameForPlayer(name, player);
+	return true;
+}
+
 SCRIPT_API(IsActorStreamedIn, bool(IActor& actor, IPlayer& player))
 {
 	return actor.isStreamedInForPlayer(player);
@@ -65,6 +83,18 @@ SCRIPT_API(SetActorPos, bool(IActor& actor, Vector3 position))
 	return true;
 }
 
+SCRIPT_API(SetActorPosFindZ, bool(IActor& actor, Vector3 position))
+{
+	actor.setPositionFindZ(position);
+	return true;
+}
+
+SCRIPT_API(SetActorPosNoSync, bool(IActor& actor, Vector3 position))
+{
+	actor.updatePosition(position);
+	return true;
+}
+
 SCRIPT_API(GetActorPos, bool(IActor& actor, Vector3& position))
 {
 	position = actor.getPosition();
@@ -95,6 +125,24 @@ SCRIPT_API(GetActorHealth, bool(IActor& actor, float& health))
 	return true;
 }
 
+SCRIPT_API(SetActorArmour, bool(IActor& actor, float armour))
+{
+	actor.setArmour(armour);
+	return true;
+}
+
+SCRIPT_API(SetActorArmourForPlayer, bool(IActor& actor, float armour, IPlayer& player))
+{
+	actor.setArmourForPlayer(armour, player);
+	return true;
+}
+
+SCRIPT_API(GetActorArmour, bool(IActor& actor, float& armour))
+{
+	armour = actor.getArmour();
+	return true;
+}
+
 SCRIPT_API(SetActorInvulnerable, bool(IActor& actor, bool invulnerable))
 {
 	actor.setInvulnerable(invulnerable);
@@ -122,6 +170,29 @@ SCRIPT_API(GetActorSkin, int(IActor& actor))
 	return actor.getSkin();
 }
 
+SCRIPT_API(SetActorArmedWeapon, bool(IActor& actor, uint32_t weapon))
+{
+	actor.setWeapon(weapon);
+	return true;
+}
+
+SCRIPT_API(SetActorArmedWeaponForPlayer, bool(IActor& actor, uint32_t weapon, IPlayer& player))
+{
+	actor.setWeaponForPlayer(weapon, player);
+	return true;
+}
+
+SCRIPT_API(GetActorArmedWeapon, int(IActor& actor))
+{
+	return actor.getWeapon();
+}
+
+SCRIPT_API(SetActorAim, bool(IActor& actor, Vector3 position, int time))
+{
+	actor.setAim(position, time);
+	return true;
+}
+
 SCRIPT_API(GetActorAnimation, bool(IActor& actor, OutputOnlyString& animationLibrary, OutputOnlyString& animationName, float& delta, bool& loop, bool& lockX, bool& lockY, bool& freeze, int& time))
 {
 	const AnimationData& anim = actor.getAnimation();
@@ -146,4 +217,26 @@ SCRIPT_API(GetActorSpawnInfo, bool(IActor& actor, int& skin, Vector3& position, 
 	angle = spawnData.facingAngle;
 	skin = spawnData.skin;
 	return true;
+}
+
+SCRIPT_API(PutActorInVehicle, bool(IActor& actor, IVehicle& vehicle, int seat, bool force))
+{
+	actor.putInVehicle(vehicle, seat, force);
+	return true;
+}
+
+SCRIPT_API(RemoveActorFromVehicle, bool(IActor& actor, bool force))
+{
+	actor.removeFromVehicle(force);
+	return true;
+}
+
+SCRIPT_API(GetActorVehicle, int(IActor& actor))
+{
+	return actor.getVehicle();
+}
+
+SCRIPT_API(GetActorVehicleSeat, int(IActor& actor))
+{
+	return actor.getSeat();
 }
