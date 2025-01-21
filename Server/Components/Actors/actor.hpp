@@ -326,6 +326,16 @@ public:
 		PacketHelper::broadcastToSome(RPC, streamedFor_.entries());
 	}
 
+	void setPositionFindZ(Vector3 position) override
+	{
+		pos_ = position;
+
+		NetCode::RPC::SetActorPosFindZForPlayer RPC;
+		RPC.ActorID = poolID;
+		RPC.Position = position;
+		PacketHelper::broadcastToSome(RPC, streamedFor_.entries());
+	}
+
 	void updatePosition(Vector3 position) override
 	{
 		pos_ = position;
@@ -449,16 +459,6 @@ public:
 		RPC.ActorID = poolID;
 		RPC.Position = position;
 		RPC.Time = time;
-		PacketHelper::broadcastToSome(RPC, streamedFor_.entries());
-	}
-
-	void setPositionFindZ(Vector3 position) override
-	{
-		pos_ = position;
-
-		NetCode::RPC::SetActorPosFindZForPlayer RPC;
-		RPC.ActorID = poolID;
-		RPC.Position = position;
 		PacketHelper::broadcastToSome(RPC, streamedFor_.entries());
 	}
 

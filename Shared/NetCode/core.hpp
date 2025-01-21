@@ -1589,13 +1589,9 @@ namespace RPC
 		int PlayerID;
 		uint8_t Tag;
 
-		bool read(NetworkBitStream& bs)
-		{
-			return false;
-		}
-
 		void write(NetworkBitStream& bs) const
 		{
+			bs.writeINT8(CUSTOM_PACKET);
 			bs.writeUINT32(300);
 			bs.writeUINT16(PlayerID);
 			bs.writeUINT8(Tag);
