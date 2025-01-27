@@ -75,6 +75,7 @@ private:
 		showActorForPlayerRPC.Invulnerable = invulnerable_;
 		showActorForPlayerRPC.Position = pos_;
 		showActorForPlayerRPC.SkinID = skin_;
+		showActorForPlayerRPC.WeaponID = weapon_;
 
 		if (modelsComponent_)
 		{
@@ -328,8 +329,6 @@ public:
 
 	void setPositionFindZ(Vector3 position) override
 	{
-		pos_ = position;
-
 		NetCode::RPC::SetActorPosFindZForPlayer RPC;
 		RPC.ActorID = poolID;
 		RPC.Position = position;
