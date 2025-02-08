@@ -197,6 +197,23 @@ SCRIPT_API(print, bool(const std::string& text))
 	return false;
 }
 
+SCRIPT_API(SendRconMessage, bool(const std::string& text))
+{
+	if (PawnManager::Get()->console == nullptr)
+	{
+		return false;
+	}
+
+	ConsoleMessageHandler* handler = PawnManager::Get()->console->getRconHandler();
+	if (handler == nullptr)
+	{
+		return false;
+	}
+
+	handler->handleConsoleMessage(text.c_str());
+	return true;
+}
+
 SCRIPT_API(IsAdminTeleportAllowed, bool())
 {
 	return *PawnManager::Get()->config->getBool("rcon.allow_teleport");

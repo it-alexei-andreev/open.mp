@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  This Source Code Form is subject to the terms of the Mozilla Public License,
  *  v. 2.0. If a copy of the MPL was not distributed with this file, You can
  *  obtain one at http://mozilla.org/MPL/2.0/.
@@ -269,6 +269,12 @@ void Query::handleRCON(Span<const char> buffer, uint32_t sock, const sockaddr_in
 					{
 						if (subbuf.size() - offset == cmdLen)
 						{
+							if (console->getRconHandler() == nullptr)
+							{
+								LegacyConsoleMessageHandler* rconHandler = new LegacyConsoleMessageHandler(sock, client, tolen, buffer.subspan(0, BASE_QUERY_SIZE));
+								console->setRconHandler(rconHandler);
+							}
+
 							StringView cmd(&subbuf.data()[offset], cmdLen);
 							LegacyConsoleMessageHandler handler(sock, client, tolen, buffer.subspan(0, BASE_QUERY_SIZE));
 							console->send(cmd, ConsoleCommandSenderData(handler));

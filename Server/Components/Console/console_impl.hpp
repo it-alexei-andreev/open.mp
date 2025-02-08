@@ -65,6 +65,7 @@ private:
 	String cmd;
 	ThreadProcData* threadData;
 	std::thread cinThread;
+	ConsoleMessageHandler* rconHandler = nullptr;
 
 	struct PlayerRconCommandHandler : public SingleNetworkInEventHandler
 	{
@@ -281,6 +282,23 @@ public:
 	IEventDispatcher<ConsoleEventHandler>& getEventDispatcher() override
 	{
 		return eventDispatcher;
+	}
+
+	ConsoleMessageHandler* getRconHandler() override
+	{
+		return rconHandler;
+	}
+
+	void setRconHandler(ConsoleMessageHandler* handler) override
+	{
+		if (handler == nullptr)
+		{
+			return;
+		}
+		if (rconHandler == nullptr)
+		{
+			rconHandler = handler;
+		}
 	}
 
 	void send(StringView command, const ConsoleCommandSenderData& sender = ConsoleCommandSenderData()) override
