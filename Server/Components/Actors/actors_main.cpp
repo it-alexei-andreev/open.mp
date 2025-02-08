@@ -20,6 +20,7 @@ private:
 	StreamConfigHelper streamConfigHelper;
 	ICustomModelsComponent* modelsComponent = nullptr;
 	IFixesComponent* fixesComponent_ = nullptr;
+	IVehiclesComponent* vehiclesComponent_ = nullptr;
 
 	struct PlayerDamageActorEventHandler : public SingleNetworkInEventHandler
 	{
@@ -104,6 +105,7 @@ public:
 	{
 		modelsComponent = components->queryComponent<ICustomModelsComponent>();
 		fixesComponent_ = components->queryComponent<IFixesComponent>();
+		vehiclesComponent_ = components->queryComponent<IVehiclesComponent>();
 	}
 
 	void onFree(IComponent* component) override
@@ -115,6 +117,10 @@ public:
 		if (component == fixesComponent_)
 		{
 			fixesComponent_ = nullptr;
+		}
+		if (component == vehiclesComponent_)
+		{
+			vehiclesComponent_ = nullptr;
 		}
 	}
 
@@ -145,7 +151,7 @@ public:
 
 	IActor* create(int skin, Vector3 pos, float angle) override
 	{
-		return storage.emplace(skin, pos, angle, core->getConfig().getBool("game.use_all_animations"), core->getConfig().getBool("game.validate_animations"), modelsComponent, fixesComponent_);
+		return storage.emplace(skin, pos, angle, core->getConfig().getBool("game.use_all_animations"), core->getConfig().getBool("game.validate_animations"), modelsComponent, fixesComponent_, vehiclesComponent_);
 	}
 
 	void free() override

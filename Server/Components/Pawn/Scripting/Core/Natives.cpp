@@ -197,6 +197,23 @@ SCRIPT_API(print, bool(const std::string& text))
 	return false;
 }
 
+SCRIPT_API(SendRconMessage, bool(const std::string& text))
+{
+	if (PawnManager::Get()->console == nullptr)
+	{
+		return false;
+	}
+
+	ConsoleMessageHandler* handler = PawnManager::Get()->console->getRconHandler();
+	if (handler == nullptr)
+	{
+		return false;
+	}
+
+	handler->handleConsoleMessage(text.c_str());
+	return true;
+}
+
 SCRIPT_API(IsAdminTeleportAllowed, bool())
 {
 	return *PawnManager::Get()->config->getBool("rcon.allow_teleport");
@@ -763,7 +780,7 @@ SCRIPT_API(SetWorldTime, bool(int hour))
 
 SCRIPT_API(SHA256_PassHash, int(std::string const& password, std::string const& salt, OutputOnlyString& output))
 {
-	PawnManager::Get()->core->logLn(LogLevel::Warning, "Using unsafe hashing function SHA256_PassHash");
+	// PawnManager::Get()->core->logLn(LogLevel::Warning, "Using unsafe hashing function SHA256_PassHash");
 
 	// Scope-allocated string, copy it
 	StaticArray<char, 64 + 1> hash;

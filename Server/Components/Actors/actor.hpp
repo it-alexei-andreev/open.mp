@@ -34,20 +34,26 @@ struct PlayerActorData final : IExtension
 class Actor final : public IActor, public PoolIDProvider, public NoCopy
 {
 private:
+	HybridString<MAX_ACTOR_NAME + 1> name_;
 	int virtualWorld_;
 	int16_t skin_;
+	int32_t weapon_;
 	bool invulnerable_;
 	bool animationLoop_;
 	Vector3 pos_;
 	float angle_;
 	float health_;
+	float armour_;
 	UniqueIDArray<IPlayer, PLAYER_POOL_SIZE> streamedFor_;
 	AnimationData animation_;
+	int vehicle_;
+	int seat_;
 	ActorSpawnData spawnData_;
 	bool* allAnimationLibraries_;
 	bool* validateAnimations_;
 	ICustomModelsComponent*& modelsComponent_;
 	IFixesComponent* fixesComponent_;
+	IVehiclesComponent*& vehiclesComponent_;
 
 	void restream()
 	{
@@ -62,11 +68,14 @@ private:
 	{
 		NetCode::RPC::ShowActorForPlayer showActorForPlayerRPC(player.getClientVersion() == ClientVersion::ClientVersion_SAMP_03DL);
 		showActorForPlayerRPC.ActorID = poolID;
+		showActorForPlayerRPC.Name = StringView(name_);
 		showActorForPlayerRPC.Angle = angle_;
 		showActorForPlayerRPC.Health = health_;
+		showActorForPlayerRPC.Armour = armour_;
 		showActorForPlayerRPC.Invulnerable = invulnerable_;
 		showActorForPlayerRPC.Position = pos_;
 		showActorForPlayerRPC.SkinID = skin_;
+		showActorForPlayerRPC.WeaponID = weapon_;
 
 		if (modelsComponent_)
 		{
@@ -103,20 +112,49 @@ public:
 		}
 	}
 
-	Actor(int skin, Vector3 pos, float angle, bool* allAnimationLibraries, bool* validateAnimations, ICustomModelsComponent*& modelsComponent, IFixesComponent* fixesComponent)
-		: virtualWorld_(0)
+	Actor(int skin, Vector3 pos, float angle, bool* allAnimationLibraries, bool* validateAnimations, ICustomModelsComponent*& modelsComponent, IFixesComponent* fixesComponent, IVehiclesComponent*& vehiclesComponent)
+		: name_("")
+		, virtualWorld_(0)
 		, skin_(skin)
+		, weapon_(PlayerWeapon_Fist)
 		, invulnerable_(true)
 		, animationLoop_(false)
 		, pos_(pos)
 		, angle_(angle)
 		, health_(100.f)
+		, armour_(0.f)
 		, spawnData_ { pos, angle, skin }
+		, vehicle_(INVALID_VEHICLE_ID)
+		, seat_(SEAT_NONE)
 		, allAnimationLibraries_(allAnimationLibraries)
 		, validateAnimations_(validateAnimations)
 		, modelsComponent_(modelsComponent)
 		, fixesComponent_(fixesComponent)
+		, vehiclesComponent_(vehiclesComponent)
 	{
+	}
+
+	void setName(StringView name) override
+	{
+		name_ = name;
+
+		NetCode::RPC::SetActorNameForPlayer RPC;
+		RPC.ActorID = poolID;
+		RPC.Name = StringView(name);
+		PacketHelper::broadcastToSome(RPC, streamedFor_.entries());
+	}
+
+	void setNameForPlayer(StringView name, IPlayer& player) override
+	{
+		NetCode::RPC::SetActorNameForPlayer RPC;
+		RPC.ActorID = poolID;
+		RPC.Name = StringView(name);
+		PacketHelper::send(RPC, player);
+	}
+
+	StringView getName() override
+	{
+		return name_;
 	}
 
 	void setHealth(float health) override
@@ -131,6 +169,28 @@ public:
 	float getHealth() const override
 	{
 		return health_;
+	}
+
+	void setArmour(float armour) override
+	{
+		armour_ = armour;
+		NetCode::RPC::SetActorArmourForPlayer RPC;
+		RPC.ActorID = poolID;
+		RPC.Armour = armour;
+		PacketHelper::broadcastToSome(RPC, streamedFor_.entries());
+	}
+
+	void setArmourForPlayer(float armour, IPlayer& player) override
+	{
+		NetCode::RPC::SetActorArmourForPlayer RPC;
+		RPC.ActorID = poolID;
+		RPC.Armour = armour;
+		PacketHelper::send(RPC, player);
+	}
+
+	float getArmour() const override
+	{
+		return armour_;
 	}
 
 	void setInvulnerable(bool invuln) override
@@ -267,6 +327,82 @@ public:
 		PacketHelper::broadcastToSome(RPC, streamedFor_.entries());
 	}
 
+	void setPositionFindZ(Vector3 position) override
+	{
+		NetCode::RPC::SetActorPosFindZForPlayer RPC;
+		RPC.ActorID = poolID;
+		RPC.Position = position;
+		PacketHelper::broadcastToSome(RPC, streamedFor_.entries());
+	}
+
+	void updatePosition(Vector3 position) override
+	{
+		pos_ = position;
+	}
+
+	void putInVehicle(IVehicle& vehicle, int seat, bool force) override
+	{
+		if (vehiclesComponent_)
+		{
+			IVehicle* actorVehicle = vehiclesComponent_->get(vehicle_);
+			if (actorVehicle)
+			{
+				actorVehicle->removeActor(this);
+			}
+		}
+
+		vehicle_ = vehicle.getID();
+		seat_ = seat;
+		vehicle.addActor(this);
+
+		if (force == true)
+		{
+			NetCode::RPC::PutActorInVehicleForPlayer RPC;
+			RPC.ActorID = poolID;
+			RPC.VehicleID = vehicle.getID();
+			RPC.SeatID = seat;
+			PacketHelper::broadcastToSome(RPC, streamedFor_.entries());
+		}
+		else
+		{
+			NetCode::RPC::ActorGoInVehicleForPlayer RPC;
+			RPC.ActorID = poolID;
+			RPC.VehicleID = vehicle.getID();
+			RPC.SeatID = seat;
+			PacketHelper::broadcastToSome(RPC, streamedFor_.entries());
+		}
+	}
+
+	void removeFromVehicle(bool force) override
+	{
+		if (vehiclesComponent_)
+		{
+			IVehicle* actorVehicle = vehiclesComponent_->get(vehicle_);
+			if (actorVehicle)
+			{
+				actorVehicle->removeActor(this);
+			}
+		}
+
+		vehicle_ = INVALID_VEHICLE_ID;
+		seat_ = SEAT_NONE;
+
+		NetCode::RPC::RemoveActorFromVehicleForPlayer RPC;
+		RPC.ActorID = poolID;
+		RPC.Force = force;
+		PacketHelper::broadcastToSome(RPC, streamedFor_.entries());
+	}
+
+	int getVehicle() override
+	{
+		return vehicle_;
+	}
+
+	int getSeat() override
+	{
+		return seat_;
+	}
+
 	GTAQuat getRotation() const override
 	{
 		return GTAQuat(0.f, 0.f, angle_);
@@ -293,6 +429,38 @@ public:
 		return skin_;
 	}
 
+	void setWeapon(uint32_t weapon) override
+	{
+		weapon_ = weapon;
+
+		NetCode::RPC::SetActorWeaponForPlayer RPC;
+		RPC.ActorID = poolID;
+		RPC.WeaponID = weapon;
+		PacketHelper::broadcastToSome(RPC, streamedFor_.entries());
+	}
+
+	void setWeaponForPlayer(uint32_t weapon, IPlayer& player) override
+	{
+		NetCode::RPC::SetActorWeaponForPlayer RPC;
+		RPC.ActorID = poolID;
+		RPC.WeaponID = weapon;
+		PacketHelper::send(RPC, player);
+	}
+
+	uint32_t getWeapon() const override
+	{
+		return weapon_;
+	}
+
+	void setAim(Vector3 position, int time) override
+	{
+		NetCode::RPC::SetActorAimForPlayer RPC;
+		RPC.ActorID = poolID;
+		RPC.Position = position;
+		RPC.Time = time;
+		PacketHelper::broadcastToSome(RPC, streamedFor_.entries());
+	}
+
 	const ActorSpawnData& getSpawnData() override
 	{
 		return spawnData_;
@@ -300,6 +468,7 @@ public:
 
 	~Actor()
 	{
+		removeFromVehicle(true);
 	}
 
 	void destream()

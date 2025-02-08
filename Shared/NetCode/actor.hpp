@@ -28,6 +28,9 @@ namespace RPC
 		float Health;
 		bool Invulnerable;
 		bool isDL;
+		HybridString<MAX_ACTOR_NAME + 1> Name;
+		float Armour;
+		uint32_t WeaponID;
 
 		ShowActorForPlayer(bool isDL)
 			: isDL(isDL)
@@ -46,6 +49,9 @@ namespace RPC
 			bs.writeFLOAT(Angle);
 			bs.writeFLOAT(Health);
 			bs.writeUINT8(Invulnerable);
+			bs.writeDynStr8(Name);
+			bs.writeFLOAT(Armour);
+			bs.writeUINT32(WeaponID);
 		}
 	};
 
@@ -147,6 +153,133 @@ namespace RPC
 			}
 			bs.readUINT32(WeaponID);
 			return bs.readUINT32(Bodypart);
+		}
+	};
+
+	// CustomPacket RPCs
+	struct SetActorWeaponForPlayer : NetworkPacketBase<CUSTOM_PACKET, NetworkPacketType::Packet, OrderingChannel_SyncPacket>
+	{
+		int ActorID;
+		uint32_t WeaponID;
+
+		void write(NetworkBitStream& bs) const
+		{
+			bs.writeINT8(CUSTOM_PACKET);
+			bs.writeUINT32(304);
+
+			bs.writeUINT16(ActorID);
+			bs.writeUINT32(WeaponID);
+		}
+	};
+
+	struct SetActorAimForPlayer : NetworkPacketBase<CUSTOM_PACKET, NetworkPacketType::Packet, OrderingChannel_SyncPacket>
+	{
+		int ActorID;
+		Vector3 Position;
+		int Time;
+
+		void write(NetworkBitStream& bs) const
+		{
+			bs.writeINT8(CUSTOM_PACKET);
+			bs.writeUINT32(305);
+
+			bs.writeUINT16(ActorID);
+			bs.writeVEC3(Position);
+			bs.writeUINT32(Time);
+		}
+	};
+
+	struct SetActorPosFindZForPlayer : NetworkPacketBase<CUSTOM_PACKET, NetworkPacketType::Packet, OrderingChannel_SyncPacket>
+	{
+		int ActorID;
+		Vector3 Position;
+
+		void write(NetworkBitStream& bs) const
+		{
+			bs.writeINT8(CUSTOM_PACKET);
+			bs.writeUINT32(306);
+
+			bs.writeUINT16(ActorID);
+			bs.writeVEC3(Position);
+		}
+	};
+
+	struct SetActorNameForPlayer : NetworkPacketBase<CUSTOM_PACKET, NetworkPacketType::Packet, OrderingChannel_SyncPacket>
+	{
+		int ActorID;
+		HybridString<MAX_ACTOR_NAME + 1> Name;
+
+		void write(NetworkBitStream& bs) const
+		{
+			bs.writeINT8(CUSTOM_PACKET);
+			bs.writeUINT32(307);
+
+			bs.writeUINT16(ActorID);
+			bs.writeDynStr8(Name);
+		}
+	};
+
+	struct SetActorArmourForPlayer : NetworkPacketBase<CUSTOM_PACKET, NetworkPacketType::Packet, OrderingChannel_SyncPacket>
+	{
+		int ActorID;
+		float Armour;
+
+		void write(NetworkBitStream& bs) const
+		{
+			bs.writeINT8(CUSTOM_PACKET);
+			bs.writeUINT32(308);
+
+			bs.writeUINT16(ActorID);
+			bs.writeFLOAT(Armour);
+		}
+	};
+
+	struct ActorGoInVehicleForPlayer : NetworkPacketBase<CUSTOM_PACKET, NetworkPacketType::Packet, OrderingChannel_SyncPacket>
+	{
+		int ActorID;
+		int VehicleID;
+		int SeatID;
+
+		void write(NetworkBitStream& bs) const
+		{
+			bs.writeUINT8(CUSTOM_PACKET);
+			bs.writeUINT32(309);
+
+			bs.writeUINT16(ActorID);
+			bs.writeUINT16(VehicleID);
+			bs.writeUINT8(SeatID);
+		}
+	};
+
+	struct PutActorInVehicleForPlayer : NetworkPacketBase<CUSTOM_PACKET, NetworkPacketType::Packet, OrderingChannel_SyncPacket>
+	{
+		int ActorID;
+		int VehicleID;
+		int SeatID;
+
+		void write(NetworkBitStream& bs) const
+		{
+			bs.writeINT8(CUSTOM_PACKET);
+			bs.writeUINT32(310);
+
+			bs.writeUINT16(ActorID);
+			bs.writeUINT16(VehicleID);
+			bs.writeUINT8(SeatID);
+		}
+	};
+
+	struct RemoveActorFromVehicleForPlayer : NetworkPacketBase<CUSTOM_PACKET, NetworkPacketType::Packet, OrderingChannel_SyncPacket>
+	{
+		int ActorID;
+		bool Force;
+
+		void write(NetworkBitStream& bs) const
+		{
+			bs.writeINT8(CUSTOM_PACKET);
+			bs.writeUINT32(311);
+
+			bs.writeUINT16(ActorID);
+			bs.writeUINT8(Force);
 		}
 	};
 }

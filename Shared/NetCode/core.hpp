@@ -308,6 +308,7 @@ namespace RPC
 		uint8_t FightingStyle;
 		StaticArray<uint16_t, NUM_SKILL_LEVELS> SkillLevel;
 		bool isDL;
+		uint8_t Tag;
 
 		PlayerStreamIn(bool isDL)
 			: isDL(isDL)
@@ -332,7 +333,8 @@ namespace RPC
 			bs.writeFLOAT(Angle);
 			bs.writeUINT32(Col.RGBA());
 			bs.writeUINT8(FightingStyle);
-			bs.writeArray(Span<const uint16_t>(SkillLevel));
+			// bs.writeArray(Span<const uint16_t>(SkillLevel));
+			bs.writeUINT8(Tag);
 		}
 	};
 
@@ -1580,6 +1582,21 @@ namespace RPC
 			bs.writeINT32(worldId);
 		}
 	};
+
+	// CustomPacket RPCs
+	struct SetPlayerTag : NetworkPacketBase<CUSTOM_PACKET, NetworkPacketType::Packet, OrderingChannel_SyncPacket>
+	{
+		int PlayerID;
+		uint8_t Tag;
+
+		void write(NetworkBitStream& bs) const
+		{
+			bs.writeINT8(CUSTOM_PACKET);
+			bs.writeUINT32(300);
+			bs.writeUINT16(PlayerID);
+			bs.writeUINT8(Tag);
+		}
+	};
 }
 
 namespace Packet
@@ -1729,6 +1746,7 @@ namespace Packet
 		};
 		uint8_t AspectRatio;
 		uint8_t CamMode;
+		bool isTyping;
 
 		bool read(NetworkBitStream& bs)
 		{
@@ -1746,7 +1764,8 @@ namespace Packet
 				return false;
 			}
 			bs.readUINT8(ZoomWepState);
-			return bs.readUINT8(AspectRatio);
+			bs.readUINT8(AspectRatio);
+			return bs.readUINT8(isTyping);
 		}
 
 		void write(NetworkBitStream& bs) const
@@ -1759,6 +1778,7 @@ namespace Packet
 			bs.writeFLOAT(AimZ);
 			bs.writeUINT8(ZoomWepState);
 			bs.writeUINT8(AspectRatio);
+			bs.writeUINT8(isTyping);
 		}
 	};
 

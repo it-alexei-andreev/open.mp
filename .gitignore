@@ -297,6 +297,7 @@ __pycache__/
 **/CMakeFiles/*
 CMakeFiles/*
 CMakeCache.txt
+CMakeSettings.json
 conan.lock
 conanbuildinfo*.*
 conanfile.txt

@@ -13,6 +13,7 @@
 #include <Server/Components/Vehicles/vehicles.hpp>
 #include <chrono>
 #include <netcode.hpp>
+#include <Server/Components/Actors/actors.hpp>
 
 using namespace Impl;
 
@@ -49,6 +50,7 @@ private:
 	bool respawning = false;
 	bool detaching = false;
 	FlatHashSet<IPlayer*> passengers;
+	FlatHashSet<IActor*> actors;
 	HybridString<16> numberPlate = StringView("XYZSR998");
 	uint8_t objective;
 	uint8_t doorsLocked;
@@ -272,6 +274,21 @@ public:
 	const FlatHashSet<IPlayer*>& getPassengers() override
 	{
 		return passengers;
+	}
+
+	const FlatHashSet<IActor*>& getActors() override
+	{
+		return actors;
+	}
+
+	void addActor(IActor* actor) override
+	{
+		actors.insert(actor);
+	}
+
+	void removeActor(IActor* actor) override
+	{
+		actors.erase(actor);
 	}
 
 	void setPlate(StringView plate) override;
